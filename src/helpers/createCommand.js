@@ -17,7 +17,9 @@ function createCommand(
         .setName("person")
         .setDescription(`The person to ${optionDescription.toLowerCase()}`)
         .setRequired(true)
-    );
+    )
+    .setIntegrationTypes([0, 1])
+    .setContexts([0, 1, 2]);
 
   async function execute(interaction) {
     try {
