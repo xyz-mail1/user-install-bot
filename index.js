@@ -10,6 +10,7 @@ const client = new Client({
 });
 
 client.commands = new Collection();
+client.roleplay = new Collection();
 
 const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
