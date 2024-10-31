@@ -10,8 +10,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "anime-actions": "^2.1.2",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
+    "mongodb": "^6.10.0",
     "node-fetch": "^2.7.0"
   }
 }
