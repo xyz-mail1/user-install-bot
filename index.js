@@ -1,6 +1,8 @@
 const { Client, Events, GatewayIntentBits, Collection } = require("discord.js");
+const { log } = require("node:console");
 const fs = require("node:fs");
 const path = require("node:path");
+console.log("test");
 
 require("dotenv").config();
 
