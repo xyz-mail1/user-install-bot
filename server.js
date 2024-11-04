@@ -126,3 +126,24 @@ function broadcast(message) {
     }
   });
 }
+
+const url = "https://user-install-bot.onrender.com/";
+
+function keepAlive() {
+  fetch(url)
+    .then((response) => {
+      console.log(
+        `Reloaded at ${new Date().toISOString()}: Status Code ${
+          response.status
+        }`
+      );
+    })
+    .catch((error) => {
+      console.error(
+        `Error reloading at ${new Date().toISOString()}:`,
+        error.message
+      );
+    });
+}
+
+setInterval(keepAlive, 30000);
