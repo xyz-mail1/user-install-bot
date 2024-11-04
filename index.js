@@ -4,6 +4,18 @@ const fs = require("node:fs");
 const path = require("node:path");
 require("dotenv").config();
 const fetch = require("node-fetch");
+const express = require("express");
+
+const express = require("express");
+const app = express();
+const port = 4000;
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages],
