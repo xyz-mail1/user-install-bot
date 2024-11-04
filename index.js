@@ -1,8 +1,9 @@
 const { Client, Events, GatewayIntentBits, Collection } = require("discord.js");
-const { log } = require("node:console");
+
 const fs = require("node:fs");
 const path = require("node:path");
 require("dotenv").config();
+const fetch = require("node-fetch");
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages],
@@ -48,3 +49,24 @@ for (const file of eventFiles) {
 }
 
 client.login(process.env.token);
+
+const url = "https://user-install-bot.onrender.com/";
+
+function keepAlive() {
+  fetch(url)
+    .then((response) => {
+      console.log(
+        `Reloaded at ${new Date().toISOString()}: Status Code ${
+          response.status
+        }`
+      );
+    })
+    .catch((error) => {
+      console.error(
+        `Error reloading at ${new Date().toISOString()}:`,
+        error.message
+      );
+    });
+}
+
+setInterval(keepAlive, 30000);
