@@ -4,7 +4,6 @@ const fs = require("node:fs");
 const path = require("node:path");
 require("dotenv").config();
 const fetch = require("node-fetch");
-const express = require("express");
 
 const express = require("express");
 const app = express();
@@ -61,3 +60,22 @@ for (const file of eventFiles) {
 }
 
 client.login(process.env.token);
+
+function keepAlive() {
+  fetch("https://user-install-bot.onrender.com/")
+    .then((response) => {
+      console.log(
+        `Reloaded at ${new Date().toISOString()}: Status Code ${
+          response.status
+        }`
+      );
+    })
+    .catch((error) => {
+      console.error(
+        `Error reloading at ${new Date().toISOString()}:`,
+        error.message
+      );
+    });
+}
+
+setInterval(keepAlive, 30000);
