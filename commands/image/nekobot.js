@@ -19,7 +19,7 @@ module.exports = {
         const data = await res.json();
         const url = data.message;
         const embed = new EmbedBuilder().setImage(url).setColor("Green");
-        await interaction.reply({ content: url, embeds: [embed] });
+        await interaction.reply({ embeds: [embed] });
       } catch (error) {
         console.log("error");
         interaction.reply({
