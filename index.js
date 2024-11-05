@@ -61,6 +61,14 @@ for (const file of eventFiles) {
 
 client.login(process.env.token);
 
+process.on("uncaughtException", (err, origin) => {
+  console.log(`Caught exception: ${err}\n` + `Exception origin: ${origin}\n`);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.log("Unhandled Rejection at:", promise, "reason:", reason);
+});
+
 function keepAlive() {
   fetch("https://user-install-bot.onrender.com/")
     .then((response) => {
