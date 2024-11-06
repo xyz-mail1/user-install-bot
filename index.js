@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Listening on port ${port}`);
 });
 
 const client = new Client({
@@ -21,7 +21,6 @@ const client = new Client({
 });
 
 client.commands = new Collection();
-client.roleplay = new Collection();
 
 const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);

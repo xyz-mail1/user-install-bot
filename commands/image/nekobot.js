@@ -5,6 +5,8 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("nsfw")
     .setDescription("_ _")
+    .setIntegrationTypes([0, 1])
+    .setContexts([0, 1, 2])
     .addSubcommand((cmd) =>
       cmd
         .setName("feet")
