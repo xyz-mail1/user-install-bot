@@ -27,7 +27,7 @@ function createCommand(
       const gifLink = await fetchGif(apiEndpoint);
 
       const embed = new EmbedBuilder()
-        .setColor("Green")
+        .setColor("Random")
         .setImage(gifLink)
         .setDescription(
           `<@${interaction.user.id}> ${embedDescription.toLowerCase()} <@${

@@ -75,7 +75,9 @@ module.exports = {
     try {
       const res = await fetch(apiUrl);
       const data = await res.json();
-      const embed = new EmbedBuilder().setImage(data.message).setColor("Green");
+      const embed = new EmbedBuilder()
+        .setImage(data.message)
+        .setColor("Random");
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.log("error");
