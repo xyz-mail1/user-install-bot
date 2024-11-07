@@ -69,7 +69,7 @@ process.on("unhandledRejection", (reason, promise) => {
 });
 
 function keepAlive() {
-  fetch("https://user-install-bot.onrender.com/")
+  fetch("https://shivbot-5j79.onrender.com/")
     .then((response) => {
       console.log(
         `Reloaded at ${new Date().toISOString()}: Status Code ${
