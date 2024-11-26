@@ -3,18 +3,6 @@ const { Client, Events, GatewayIntentBits, Collection } = require("discord.js");
 const fs = require("node:fs");
 const path = require("node:path");
 require("dotenv").config();
-const fetch = require("node-fetch");
-
-const express = require("express");
-const app = express();
-const port = 4000;
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages],
@@ -67,22 +55,3 @@ process.on("uncaughtException", (err, origin) => {
 process.on("unhandledRejection", (reason, promise) => {
   console.log("Unhandled Rejection at:", promise, "reason:", reason);
 });
-
-function keepAlive() {
-  fetch("https://shivbot-5j79.onrender.com/")
-    .then((response) => {
-      console.log(
-        `Reloaded at ${new Date().toISOString()}: Status Code ${
-          response.status
-        }`
-      );
-    })
-    .catch((error) => {
-      console.error(
-        `Error reloading at ${new Date().toISOString()}:`,
-        error.message
-      );
-    });
-}
-
-setInterval(keepAlive, 30000);
