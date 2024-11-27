@@ -7,7 +7,6 @@ module.exports = {
     .setDescription("_ _")
     .setIntegrationTypes([0, 1])
     .setContexts([0, 1, 2])
-    .setNSFW()
     .addSubcommand((cmd) =>
       cmd
         .setName("feet")
