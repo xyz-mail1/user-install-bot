@@ -1,19 +1,45 @@
-const { Events } = require("discord.js");
+const {
+  Events,
+  EmbedBuilder,
+  ButtonBuilder,
+  ActionRowBuilder,
+  ButtonStyle,
+} = require("discord.js");
+const fetch = require("node-fetch");
 
 module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction) {
-    if (!interaction.isChatInputCommand()) return;
+    if (interaction.isButton()) {
+      if (interaction.customId.startsWith("button-")) {
+        const subcommand = interaction.customId.split("-")[1];
 
-    if (interaction.isSelectMenu()) {
+        const apiUrl = `https://nekobot.xyz/api/image?type=${subcommand}`;
+        const button = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`button-${subcommand}`)
+            .setLabel("Refresh")
+            .setStyle(ButtonStyle.Success)
+            .setEmoji("🔄")
+        );
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        const embed = new EmbedBuilder()
+          .setImage(data.message)
+          .setColor("Random");
+        try {
+          await interaction.update({
+            embeds: [embed],
+            components: [button],
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
     }
-
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
-      console.error(
-        `No command matching ${interaction.commandName} was found.`
-      );
       return;
     }
 

@@ -6,7 +6,8 @@ const {
   ButtonStyle,
 } = require("discord.js");
 const fetch = require("node-fetch");
-async function button() {}
+const wait = require("node:timers/promises").setTimeout;
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("nsfw")
@@ -24,13 +25,15 @@ module.exports = {
       cmd.setName("gonewild").setDescription("Gonewild pic")
     ),
   async execute(interaction) {
+    await interaction.deferReply();
+
     const subcommand = interaction.options.getSubcommand();
     const apiUrl = `https://nekobot.xyz/api/image?type=${subcommand}`;
 
     try {
       const button = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-          .setCustomId("nekobot-button")
+          .setCustomId(`button-${subcommand}`)
           .setLabel("Refresh")
           .setStyle(ButtonStyle.Success)
           .setEmoji("🔄")
@@ -40,7 +43,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setImage(data.message)
         .setColor("Random");
-      await interaction.reply({ embeds: [embed], components: [button] });
+      await interaction.editReply({ embeds: [embed], components: [button] });
     } catch (error) {
       console.error("Error:", error);
       interaction.reply({ content: "An error occurred.", ephemeral: true });
