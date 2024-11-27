@@ -40,7 +40,6 @@ function createCommand(
       await interaction.reply("An error occurred while fetching the image.");
     }
   }
-
   return { data, execute };
 }
 
