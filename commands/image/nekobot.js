@@ -33,6 +33,7 @@ module.exports = {
           .setCustomId("nekobot-button")
           .setLabel("Refresh")
           .setStyle(ButtonStyle.Success)
+          .setEmoji("🔄")
       );
       const res = await fetch(apiUrl);
       const data = await res.json();
