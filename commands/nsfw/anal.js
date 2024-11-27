@@ -5,5 +5,6 @@ module.exports = createCommand(
   "fuck someone anally",
   "the person to fuck",
   "fucks",
-  "https://purrbot.site/api/img/nsfw/anal/gif"
+  "https://purrbot.site/api/img/nsfw/anal/gif",
+  "fucked"
 );

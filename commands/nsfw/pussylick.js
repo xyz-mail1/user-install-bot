@@ -5,5 +5,6 @@ module.exports = createCommand(
   "lick someone",
   "the person to lick",
   "licks",
-  "https://purrbot.site/api/img/nsfw/pussylick/gif"
+  "https://purrbot.site/api/img/nsfw/pussylick/gif",
+  "licked"
 );

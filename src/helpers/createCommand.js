@@ -8,7 +8,8 @@ function createCommand(
   description,
   optionDescription,
   embedDescription,
-  apiEndpoint
+  apiEndpoint,
+  dbword
 ) {
   const data = new SlashCommandBuilder()
     .setName(name)
@@ -42,7 +43,7 @@ function createCommand(
           `**${
             interaction.user.displayName
           }** ${embedDescription.toLowerCase()} **${target.displayName}**
-          \n-# ${target.displayName} has been fucked ${updatedCount} times!`
+          \n-# ${target.displayName} has been ${dbword} ${updatedCount} times!`
         );
       await interaction.editReply({ embeds: [embed] });
     } catch (err) {

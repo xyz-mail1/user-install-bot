@@ -5,5 +5,6 @@ module.exports = createCommand(
   "pat someone",
   "the person to pat",
   "pats",
-  "https://purrbot.site/api/img/sfw/pat/gif"
+  "https://purrbot.site/api/img/sfw/pat/gif",
+  "patted"
 );

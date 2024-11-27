@@ -5,5 +5,6 @@ module.exports = createCommand(
   "kiss someone",
   "the person to kiss",
   "kisses",
-  "https://purrbot.site/api/img/sfw/kiss/gif"
+  "https://purrbot.site/api/img/sfw/kiss/gif",
+  "kissed"
 );

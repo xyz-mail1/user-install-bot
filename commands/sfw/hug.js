@@ -5,5 +5,6 @@ module.exports = createCommand(
   "hug someone",
   "the person to hug",
   "hugs",
-  "https://purrbot.site/api/img/sfw/hug/gif"
+  "https://purrbot.site/api/img/sfw/hug/gif",
+  "hugged"
 );

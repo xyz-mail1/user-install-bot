@@ -5,5 +5,6 @@ module.exports = createCommand(
   "poke someone",
   "the person to poke",
   "pokes",
-  "https://purrbot.site/api/img/sfw/poke/gif"
+  "https://purrbot.site/api/img/sfw/poke/gif",
+  "poked"
 );
