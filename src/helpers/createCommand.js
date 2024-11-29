@@ -1,6 +1,6 @@
 // createCommand.js
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const fetchGif = require("./purr");
+const fetchGif = require("./fetchImage");
 const db = require("../../models/test");
 
 function createCommand(
@@ -29,11 +29,20 @@ function createCommand(
       const target = interaction.options.getUser("person");
       const gifLink = await fetchGif(apiEndpoint);
 
-      const result = await db.findOneAndUpdate(
-        { type: name, userID: target.id },
-        { $inc: { count: 1 } }, // Increment the count by 1
-        { new: true, upsert: true } // `new: true` returns the updated document, `upsert: true` creates a new one if not found
+      // Sort the sender and receiver IDs to ensure the same entry for both directions
+      const senderID = interaction.user.id;
+      const receiverID = target.id;
+
+      // Sort IDs alphabetically or numerically to make sure the pair is consistent
+      const [sortedSenderID, sortedReceiverID] = [senderID, receiverID].sort();
+
+      const model = db(name); // Dynamically choose model based on command name
+      const result = await model.findOneAndUpdate(
+        { type: name, senderID: sortedSenderID, recieverID: sortedReceiverID },
+        { $inc: { count: 1 } },
+        { new: true, upsert: true }
       );
+
       const updatedCount = result.count;
 
       const embed = new EmbedBuilder()
@@ -42,10 +51,12 @@ function createCommand(
         .setDescription(
           `**${
             interaction.user.displayName
-          }** ${embedDescription.toLowerCase()} **${target.displayName}**
-          \n-# ${target.displayName} has been ${dbword} ${updatedCount} times!`
+          }** ${embedDescription.toLowerCase()} **${target.displayName}**\n-# ${
+            target.displayName
+          } has been ${dbword} ${updatedCount} times!`
         );
-      await interaction.editReply({ embeds: [embed] });
+
+      const msg = await interaction.editReply({ embeds: [embed] });
     } catch (err) {
       console.log(`Error: ${err.message}`);
       await interaction.editReply(

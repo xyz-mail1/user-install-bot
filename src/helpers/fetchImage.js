@@ -1,5 +1,3 @@
-// to do
-// apiWrapper.js
 const fetch = require("node-fetch");
 
 async function fetchGif(endpoint) {
@@ -9,10 +7,10 @@ async function fetchGif(endpoint) {
       throw new Error("Network response was not ok");
     }
     const data = await response.json();
-    return data.link; // Return the link directly
+    return data.link;
   } catch (error) {
     console.error(`Fetch error: ${error.message}`);
-    throw error; // Re-throw the error for handling in the caller
+    throw error;
   }
 }
 
