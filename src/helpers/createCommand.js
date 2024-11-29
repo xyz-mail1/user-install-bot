@@ -67,7 +67,7 @@ function createCommand(
           }**\n-# That's ${result.count} ${dbword} now`
         );
 
-      await interaction.editReply({ embeds: [embed] });
+      await interaction.editReply({ content: `${target}`, embeds: [embed] });
     } catch (err) {
       console.log(`Error: ${err.message}`);
       await interaction.editReply(
