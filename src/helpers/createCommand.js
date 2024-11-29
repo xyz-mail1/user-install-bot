@@ -62,9 +62,9 @@ function createCommand(
         .setDescription(
           `**${
             interaction.user.displayName
-          }** ${embedDescription.toLowerCase()} **${target.displayName}**\n-# ${
+          }** ${embedDescription.toLowerCase()} **${
             target.displayName
-          } has been ${dbword} ${result.count} times!`
+          }**\n-# That's ${result.count} ${dbword} now`
         );
 
       await interaction.editReply({ embeds: [embed] });
