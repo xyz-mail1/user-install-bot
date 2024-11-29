@@ -1,4 +1,3 @@
-// createCommand.js
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const fetchGif = require("./fetchImage");
 const db = require("../../models/test");
@@ -28,22 +27,19 @@ function createCommand(
       await interaction.deferReply();
       const target = interaction.options.getUser("person");
       const gifLink = await fetchGif(apiEndpoint);
+      if (!gifLink)
+        return interaction.editReply({
+          content: "There was an error running the command",
+          ephemeral: true,
+        });
+      const [senderID, receiverID] = [interaction.user.id, target.id].sort(); // sort both people's id so the direction i.e x to y || y to x doesnt matter
 
-      // Sort the sender and receiver IDs to ensure the same entry for both directions
-      const senderID = interaction.user.id;
-      const receiverID = target.id;
-
-      // Sort IDs alphabetically or numerically to make sure the pair is consistent
-      const [sortedSenderID, sortedReceiverID] = [senderID, receiverID].sort();
-
-      const model = db(name); // Dynamically choose model based on command name
+      const model = db(name);
       const result = await model.findOneAndUpdate(
-        { type: name, senderID: sortedSenderID, recieverID: sortedReceiverID },
+        { type: name, senderID, recieverID: receiverID },
         { $inc: { count: 1 } },
         { new: true, upsert: true }
       );
-
-      const updatedCount = result.count;
 
       const embed = new EmbedBuilder()
         .setColor("Random")
@@ -53,10 +49,10 @@ function createCommand(
             interaction.user.displayName
           }** ${embedDescription.toLowerCase()} **${target.displayName}**\n-# ${
             target.displayName
-          } has been ${dbword} ${updatedCount} times!`
+          } has been ${dbword} ${result.count} times!`
         );
 
-      const msg = await interaction.editReply({ embeds: [embed] });
+      await interaction.editReply({ embeds: [embed] });
     } catch (err) {
       console.log(`Error: ${err.message}`);
       await interaction.editReply(
@@ -64,6 +60,7 @@ function createCommand(
       );
     }
   }
+
   return { data, execute };
 }
 
