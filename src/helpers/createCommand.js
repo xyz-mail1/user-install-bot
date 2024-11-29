@@ -2,6 +2,16 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const fetchGif = require("./fetchImage");
 const db = require("../../models/test");
 
+/**
+ * Creates a Discord slash command to interact with users and track interaction counts.
+ * @param {string} name - The name of the command.
+ * @param {string} description - A description of what the command does.
+ * @param {string} optionDescription - Description of the user option (e.g., who the interaction is with).
+ * @param {string} embedDescription - Description for the embed message.
+ * @param {string} apiEndpoint - The API endpoint used to fetch a gif.
+ * @param {string} dbword - The word used in the count message (e.g., "hugged", "slapped").
+ * @returns {Object} An object containing the data (slash command) and the execute function.
+ */
 function createCommand(
   name,
   description,
@@ -22,6 +32,11 @@ function createCommand(
     .setIntegrationTypes([0, 1])
     .setContexts([0, 1, 2]);
 
+  /**
+   * Executes the command when invoked by the user.
+   * @param {import('discord.js').Interaction} interaction - The interaction object provided by Discord when the command is triggered.
+   * @returns {Promise<void>} A promise that resolves when the interaction response is sent.
+   */
   async function execute(interaction) {
     try {
       await interaction.deferReply();
