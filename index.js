@@ -48,10 +48,10 @@ if (!process.env.token) {
   client.login(process.env.token);
 }
 
-process.on("uncaughtException", (err, origin) => {
-  console.log(`Caught exception: ${err}\n` + `Exception origin: ${origin}\n`);
+process.on("uncaughtException", (err) => {
+  console.log(`Caught exception: ${err}`);
 });
 
-process.on("unhandledRejection", (reason, promise) => {
-  console.log("Unhandled Rejection at:", promise, "reason:", reason);
+process.on("unhandledRejection", (err) => {
+  console.log("Unhandled Rejection at:", err);
 });
