@@ -44,7 +44,9 @@ module.exports = {
         .addUserOption((u) =>
           u.setName("person").setDescription("person to slap").setRequired(true)
         )
-    ),
+    )
+    .setIntegrationTypes([0, 1])
+    .setContexts([0, 1, 2]),
   async execute(interaction) {
     try {
       await interaction.deferReply();
@@ -100,6 +102,28 @@ module.exports = {
         );
         embed.setDescription(
           `${target} fucks back ${interaction.user} \n-# Thats ${count} fucks now`
+        );
+
+        if (!embed)
+          return interaction.editReply({ content: "error", ephemeral: true });
+
+        await confirmation.followUp({
+          content: `${interaction.user}`,
+          embeds: [embed],
+          components: [],
+        });
+      }
+      if (confirmation.customId === "slap") {
+        await confirmation.update({ components: [] });
+
+        const { embed, count } = await logic(
+          "https://api.waifu.pics/sfw/slap",
+          interaction.user.id,
+          target.id,
+          subcommand
+        );
+        embed.setDescription(
+          `${target} slaps back ${interaction.user} \n-# Thats ${count} slaps now`
         );
 
         if (!embed)
