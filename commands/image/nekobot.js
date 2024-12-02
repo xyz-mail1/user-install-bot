@@ -6,7 +6,6 @@ const {
   ButtonStyle,
 } = require("discord.js");
 const fetch = require("node-fetch");
-const wait = require("node:timers/promises").setTimeout;
 
 module.exports = {
   data: new SlashCommandBuilder()
