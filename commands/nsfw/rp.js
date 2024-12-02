@@ -1,16 +1,25 @@
 const {
-    SlashCommandBuilder,
-    EmbedBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    ActionRowBuilder,
-  } = require("discord.js"),
-  fetch = require("node-fetch"),
-  database = require("../../models/test");
-async function logic(url, sender, target, name) {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
+} = require("discord.js");
+const fetch = require("node-fetch");
+const database = require("../../models/test");
+
+// Constants to store URLs for easier management
+const API_URLS = {
+  fuck: "https://purrbot.site/api/img/nsfw/fuck/gif",
+  slap: "https://api.waifu.pics/sfw/slap",
+};
+
+// Function to fetch image URL and increment count
+async function fetchAndIncrementCount(url, sender, target, name) {
   try {
     const { link, url: fetchedUrl } = await (await fetch(url)).json();
     const image = url.includes("purrbot") ? link : fetchedUrl;
+
     const [senderID, receiverID] = [sender, target].sort();
     const model = database(name);
     const result = await model.findOneAndUpdate(
@@ -18,116 +27,111 @@ async function logic(url, sender, target, name) {
       { $inc: { count: 1 } },
       { new: true, upsert: true }
     );
-    const count = result.count;
-    const embed = new EmbedBuilder().setColor("Random").setImage(image);
-    return { embed, count };
+    return { image, count: result.count };
   } catch (error) {
-    throw new Error(error);
+    console.error(`Error in fetchAndIncrementCount: ${error}`);
+    throw new Error("Failed to fetch image or update database");
   }
 }
+
+// Function to handle embedding and message reply
+async function createResponse(interaction, target, subcommand, image, count) {
+  const embed = new EmbedBuilder()
+    .setColor("Random")
+    .setImage(image)
+    .setDescription(
+      `${interaction.user} ${subcommand}s ${target} \n-# That's ${count} ${subcommand}s now`
+    );
+
+  const button = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(subcommand)
+      .setLabel(`${subcommand} back`)
+      .setStyle(ButtonStyle.Success)
+  );
+
+  try {
+    const reply = await interaction.editReply({
+      content: `${target}`,
+      embeds: [embed],
+      components: [button],
+    });
+    return reply;
+  } catch (error) {
+    console.error(`Error while replying: ${error}`);
+    throw new Error("Failed to send reply");
+  }
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("rp")
-    .setDescription("roleplay commands")
+    .setDescription("Roleplay commands")
     .addSubcommand((cmd) =>
       cmd
         .setName("fuck")
-        .setDescription("fuck sm1")
+        .setDescription("Fuck someone")
         .addUserOption((u) =>
-          u.setName("person").setDescription("person to fuck").setRequired(true)
+          u.setName("person").setDescription("Person to fuck").setRequired(true)
         )
     )
     .addSubcommand((cmd) =>
       cmd
         .setName("slap")
-        .setDescription("slap someone")
+        .setDescription("Slap someone")
         .addUserOption((u) =>
-          u.setName("person").setDescription("person to slap").setRequired(true)
+          u.setName("person").setDescription("Person to slap").setRequired(true)
         )
-    )
-    .setIntegrationTypes([0, 1])
-    .setContexts([0, 1, 2]),
+    ),
   async execute(interaction) {
     try {
       await interaction.deferReply();
       const subcommand = interaction.options.getSubcommand();
       const target = interaction.options.getUser("person");
-      const map = {
-        fuck: "https://purrbot.site/api/img/nsfw/fuck/gif",
-        slap: "https://api.waifu.pics/sfw/slap",
-      };
-      const url = map[subcommand];
 
-      const { embed, count } = await logic(
+      // Get the URL based on the subcommand
+      const url = API_URLS[subcommand];
+
+      // Fetch the image and increment count in the database
+      const { image, count } = await fetchAndIncrementCount(
         url,
         interaction.user.id,
         target.id,
         subcommand
       );
-      const button = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId(subcommand)
-          .setLabel(`${subcommand} back`)
-          .setStyle(ButtonStyle.Success)
-      );
-      if (subcommand === "fuck")
-        embed.setDescription(
-          `${interaction.user} fucks ${target} \n-# Thats ${count} fucks now`
-        );
-      else if (subcommand === "slap")
-        embed.setDescription(
-          `${interaction.user} slaps ${target} \n-# Thats ${count} slaps now`
-        );
 
-      if (!embed)
-        return interaction.editReply({ content: "error", ephemeral: true });
-      const reply = await interaction.editReply({
-        content: `${target}`,
-        embeds: [embed],
-        components: [button],
-      });
+      // Create the response
+      const reply = await createResponse(
+        interaction,
+        target,
+        subcommand,
+        image,
+        count
+      );
+
+      // Wait for user interaction to "confirm" the action
       const collectorFilter = (i) => i.user.id === target.id;
       const confirmation = await reply.awaitMessageComponent({
         filter: collectorFilter,
         time: 60_000,
       });
-      if (confirmation.customId === "fuck") {
+
+      if (confirmation.customId === subcommand) {
         await confirmation.update({ components: [] });
 
-        const { embed, count } = await logic(
-          "https://purrbot.site/api/img/nsfw/fuck/gif",
-          interaction.user.id,
+        // Fetch the response again for the back action and update the message
+        const { image, count } = await fetchAndIncrementCount(
+          url,
           target.id,
+          interaction.user.id,
           subcommand
         );
-        embed.setDescription(
-          `${target} fucks back ${interaction.user} \n-# Thats ${count} fucks now`
-        );
-
-        if (!embed)
-          return interaction.editReply({ content: "error", ephemeral: true });
-
-        await confirmation.followUp({
-          content: `${interaction.user}`,
-          embeds: [embed],
-          components: [],
-        });
-      }
-      if (confirmation.customId === "slap") {
-        await confirmation.update({ components: [] });
-
-        const { embed, count } = await logic(
-          "https://api.waifu.pics/sfw/slap",
-          interaction.user.id,
-          target.id,
-          subcommand
-        );
-        embed.setDescription(
-          `${target} slaps back ${interaction.user} \n-# Thats ${count} slaps  now`
-        );
-
-        if (!embed)
-          return interaction.editReply({ content: "error", ephemeral: true });
+        const embed = new EmbedBuilder()
+          .setColor("Random")
+          .setImage(image)
+          .setDescription(
+            `${target} ${subcommand}s back ${interaction.user} \n-# That's ${count} ${subcommand}s now`
+          );
 
         await confirmation.followUp({
           content: `${interaction.user}`,
@@ -136,7 +140,11 @@ module.exports = {
         });
       }
     } catch (error) {
-      console.log(error);
+      console.error(`Error in execute function: ${error}`);
+      return interaction.editReply({
+        content: "An error occurred",
+        ephemeral: true,
+      });
     }
   },
 };
