@@ -8,18 +8,17 @@ const {
 const fetch = require("node-fetch");
 const database = require("../../models/test");
 
-// Constants to store URLs for easier management
+// API URLs for easier management
 const API_URLS = {
   fuck: "https://purrbot.site/api/img/nsfw/fuck/gif",
   slap: "https://api.waifu.pics/sfw/slap",
 };
 
-// Function to fetch image URL and increment count
-async function fetchAndIncrementCount(url, sender, target, name) {
+// Helper function to fetch image and increment count
+async function fetchAndUpdate(url, sender, target, name) {
   try {
     const { link, url: fetchedUrl } = await (await fetch(url)).json();
     const image = url.includes("purrbot") ? link : fetchedUrl;
-
     const [senderID, receiverID] = [sender, target].sort();
     const model = database(name);
     const result = await model.findOneAndUpdate(
@@ -29,13 +28,12 @@ async function fetchAndIncrementCount(url, sender, target, name) {
     );
     return { image, count: result.count };
   } catch (error) {
-    console.error(`Error in fetchAndIncrementCount: ${error}`);
     throw new Error("Failed to fetch image or update database");
   }
 }
 
-// Function to handle embedding and message reply
-async function createResponse(interaction, target, subcommand, image, count) {
+// Create response with embed and button
+function createEmbedResponse(interaction, target, subcommand, image, count) {
   const embed = new EmbedBuilder()
     .setColor("Random")
     .setImage(image)
@@ -50,19 +48,10 @@ async function createResponse(interaction, target, subcommand, image, count) {
       .setStyle(ButtonStyle.Success)
   );
 
-  try {
-    const reply = await interaction.editReply({
-      content: `${target}`,
-      embeds: [embed],
-      components: [button],
-    });
-    return reply;
-  } catch (error) {
-    console.error(`Error while replying: ${error}`);
-    throw new Error("Failed to send reply");
-  }
+  return { embed, button };
 }
 
+// Module exports
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("rp")
@@ -88,26 +77,29 @@ module.exports = {
       await interaction.deferReply();
       const subcommand = interaction.options.getSubcommand();
       const target = interaction.options.getUser("person");
-
-      // Get the URL based on the subcommand
       const url = API_URLS[subcommand];
 
-      // Fetch the image and increment count in the database
-      const { image, count } = await fetchAndIncrementCount(
+      // Fetch image and update count
+      const { image, count } = await fetchAndUpdate(
         url,
         interaction.user.id,
         target.id,
         subcommand
       );
 
-      // Create the response
-      const reply = await createResponse(
+      // Create response and send
+      const { embed, button } = createEmbedResponse(
         interaction,
         target,
         subcommand,
         image,
         count
       );
+      const reply = await interaction.editReply({
+        content: `${target}`,
+        embeds: [embed],
+        components: [button],
+      });
 
       // Wait for user interaction to "confirm" the action
       const collectorFilter = (i) => i.user.id === target.id;
@@ -119,32 +111,30 @@ module.exports = {
       if (confirmation.customId === subcommand) {
         await confirmation.update({ components: [] });
 
-        // Fetch the response again for the back action and update the message
-        const { image, count } = await fetchAndIncrementCount(
+        // Update for back action
+        const { image: newImage, count: newCount } = await fetchAndUpdate(
           url,
           target.id,
           interaction.user.id,
           subcommand
         );
-        const embed = new EmbedBuilder()
+
+        const updatedEmbed = new EmbedBuilder()
           .setColor("Random")
-          .setImage(image)
+          .setImage(newImage)
           .setDescription(
-            `${target} ${subcommand}s back ${interaction.user} \n-# That's ${count} ${subcommand}s now`
+            `${target} ${subcommand}s ${interaction.user} back\n-# That's ${newCount} ${subcommand}s now`
           );
 
         await confirmation.followUp({
           content: `${interaction.user}`,
-          embeds: [embed],
+          embeds: [updatedEmbed],
           components: [],
         });
       }
     } catch (error) {
-      console.error(`Error in execute function: ${error}`);
-      return interaction.editReply({
-        content: "An error occurred",
-        ephemeral: true,
-      });
+      console.error(`Error in rp command: ${error}`);
+      throw new Error("Something went wrong in the rp command");
     }
   },
 };
