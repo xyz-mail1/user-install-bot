@@ -123,7 +123,7 @@ module.exports = {
           subcommand
         );
         embed.setDescription(
-          `${target} slaps back ${interaction.user} \n-# Thats ${count} slaps now`
+          `${target} slaps back ${interaction.user} \n-# Thats ${count} slaps  now`
         );
 
         if (!embed)
