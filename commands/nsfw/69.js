@@ -47,23 +47,37 @@ module.exports = {
       const target = interaction.options.getUser("person");
       const [senderID, receiverID] = [interaction.user.id, target.id].sort();
       const descriptions = [
-        `**${interaction.user.username}** and **${target.username}** share mutual love. U///U`,
-        `**${interaction.user.username}** and **${target.username}** find mutual pleasure. U///U`,
-        `**${interaction.user.username}** and **${target.username}** are doing a 69. U///U`,
+        `${interaction.user.username} and ${target.username} share mutual love. U///U`,
+        `${interaction.user.username} and ${target.username} find mutual pleasure. U///U`,
+        `${interaction.user.username} and ${target.username} are doing a 69. U///U`,
       ];
       const desc =
         descriptions[Math.floor(Math.random() * descriptions.length)];
       const model = database("sixnine");
-      const result = await model.findOneAndUpdate(
+
+      const getModel = await model.findOne({
+        type: "sixnine",
+        senderID,
+        recieverID: receiverID,
+      });
+
+      // If no document exists, default to count 0
+      const localCount = (getModel?.count || 0) + 1;
+
+      const embed = new EmbedBuilder()
+        .setAuthor({
+          name: `${desc}`,
+          iconURL: `${interaction.user.avatarURL()}`,
+        })
+        .setColor("Random")
+        .setImage(gif)
+        .setDescription(`-# That's ${localCount} 69s now!!`);
+      await interaction.editReply({ content: `${target}`, embeds: [embed] });
+      await model.findOneAndUpdate(
         { type: "sixnine", senderID, recieverID: receiverID },
         { $inc: { count: 1 } },
         { new: true, upsert: true }
       );
-      const embed = new EmbedBuilder()
-        .setColor("Random")
-        .setImage(gif)
-        .setDescription(`${desc} \n-# That's ${result.count} 69s now!!`);
-      await interaction.editReply({ content: `${target}`, embeds: [embed] });
     } catch (error) {
       console.log(error);
     }

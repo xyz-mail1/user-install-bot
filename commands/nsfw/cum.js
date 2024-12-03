@@ -24,8 +24,11 @@ module.exports = {
 
     const target = interaction.options.getUser("person");
     const embed = new EmbedBuilder()
+      .setAuthor({
+        name: `${interaction.user.displayName} is cumming ngh~`,
+        iconURL: `${interaction.user.avatarURL()}`,
+      })
       .setColor("Random")
-      .setDescription(`**${interaction.user.displayName}** is cumming ngh~`)
       .setImage(data.link);
     if (!target) {
       await interaction.reply({ embeds: [embed] });

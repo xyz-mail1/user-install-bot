@@ -1,6 +1,5 @@
 const jsonArray = require("../../data/bj.json");
 const db = require("../../models/test");
-
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 module.exports = {
@@ -23,6 +22,7 @@ module.exports = {
       const link = jsonArray[Math.floor(Math.random() * jsonArray.length)];
       const [senderID, receiverID] = [interaction.user.id, target.id].sort();
       const model = db("blowjob");
+
       const getModel = await model.findOne({
         type: "blowjob",
         senderID,
