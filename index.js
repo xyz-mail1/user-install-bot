@@ -4,6 +4,10 @@ const fs = require("node:fs");
 const path = require("node:path");
 require("dotenv").config();
 
+const express = require("express");
+const app = express();
+const port = 3000;
+
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages],
 });
@@ -54,4 +58,25 @@ process.on("uncaughtException", (err) => {
 
 process.on("unhandledRejection", (err) => {
   console.log("Unhandled Rejection at:", err);
+});
+
+// Set up a route
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
+});
+
+// Keep-alive function to ping the app periodically
+const keepAlive = () => {
+  setInterval(() => {
+    console.log("Pinging the server to keep it alive");
+    fetch(`http://localhost:${port}`)
+      .then((response) => response.text())
+      .then(console.log);
+  }, 5 * 60 * 1000); // Every 5 minutes
+};
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+  keepAlive(); // Start the keepalive function
 });
