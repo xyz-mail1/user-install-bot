@@ -1,6 +1,8 @@
 const jsonArray = require("../../data/spank.json");
 const db = require("../../models/test");
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { Random, nodeCrypto } = require("random-js");
+const random = new Random(nodeCrypto);
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -18,8 +20,10 @@ module.exports = {
     try {
       await interaction.deferReply();
 
+      const v = random.pick(jsonArray, 0, 19);
+
       const target = interaction.options.getUser("person");
-      const link = jsonArray[Math.floor(Math.random() * jsonArray.length)];
+
       const [senderID, receiverID] = [interaction.user.id, target.id].sort();
       const model = db("spank");
 
@@ -38,7 +42,7 @@ module.exports = {
           iconURL: `${interaction.user.avatarURL()}`,
         })
         .setColor("Random")
-        .setImage(link)
+        .setImage(v)
         .setDescription(`-# That's ${localCount} spanks now!`);
       await interaction.editReply({
         content: `${target}`,
