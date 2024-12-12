@@ -1,5 +1,8 @@
 const { Client, GatewayIntentBits, Collection } = require("discord.js");
-
+const { log } = require("node:console");
+client.commands = new Collection();
+const eventFiles = fs.readdirSync(`./events`);
+const commandFolders = fs.readdirSync(`./commands`);
 const fs = require("node:fs");
 
 require("dotenv").config();
@@ -8,9 +11,7 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages],
 });
 
-client.commands = new Collection();
-
-const commandFolders = fs.readdirSync(`./commands`);
+// command handler
 
 commandFolders.forEach((folder) => {
   const commandFiles = fs
@@ -23,14 +24,14 @@ commandFolders.forEach((folder) => {
     if ("data" in command && "execute" in command) {
       client.commands.set(command.data.name, command);
     } else {
-      console.log(
+      console.error(
         `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
       );
     }
   });
 });
 
-const eventFiles = fs.readdirSync(`./events`);
+// events handler
 
 eventFiles.forEach((file) => {
   const filePath = `./events/${file}`;
@@ -42,16 +43,20 @@ eventFiles.forEach((file) => {
   }
 });
 
-if (!process.env.token) {
-  return console.log("Bot token not found in .env");
-} else {
+// try logging in
+
+try {
   client.login(process.env.token);
+} catch (error) {
+  return console.error(error);
 }
 
+// catch errors
+
 process.on("uncaughtException", (err) => {
-  console.log(`Caught exception: ${err}`);
+  console.error(`Caught exception: ${err}`);
 });
 
 process.on("unhandledRejection", (err) => {
-  console.log("Unhandled Rejection at:", err);
+  console.error("Unhandled Rejection at:", err);
 });
