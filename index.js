@@ -1,15 +1,12 @@
 const { Client, GatewayIntentBits, Collection } = require("discord.js");
-const { log } = require("node:console");
-client.commands = new Collection();
-const eventFiles = fs.readdirSync(`./events`);
-const commandFolders = fs.readdirSync(`./commands`);
-const fs = require("node:fs");
-
 require("dotenv").config();
-
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages],
 });
+client.commands = new Collection();
+const fs = require("node:fs");
+const eventFiles = fs.readdirSync(`./events`);
+const commandFolders = fs.readdirSync(`./commands`);
 
 // command handler
 
