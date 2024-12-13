@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const fetch = require("node-fetch");
-
+const colors = require("../../colors.json");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("cum")
@@ -28,7 +28,11 @@ module.exports = {
         name: `${interaction.user.displayName} is cumming ngh~`,
         iconURL: `${interaction.user.avatarURL()}`,
       })
-      .setColor("Random")
+      .setColor(
+        colors.embedColors[
+          Math.floor(Math.random() * colors.embedColors.length)
+        ]
+      )
       .setImage(data.link);
     if (!target) {
       await interaction.reply({ embeds: [embed] });

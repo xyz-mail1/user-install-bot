@@ -1,7 +1,7 @@
 const jsonArray = require("../../data/bj.json");
 const db = require("../../models/test");
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-
+const colors = require("../../colors.json");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("blowjob")
@@ -37,7 +37,11 @@ module.exports = {
           name: `${interaction.user.username} is sucking ${target.username} uwaa`,
           iconURL: `${interaction.user.avatarURL()}`,
         })
-        .setColor("Random")
+        .setColor(
+          colors.embedColors[
+            Math.floor(Math.random() * colors.embedColors.length)
+          ]
+        )
         .setImage(link)
         .setDescription(`-# That's ${localCount} blowjobs now!`);
       await interaction.editReply({

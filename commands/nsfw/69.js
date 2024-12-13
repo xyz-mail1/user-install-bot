@@ -23,7 +23,7 @@ const gifs = [
 
 const database = require("../../models/test");
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-
+const colors = require("../../colors.json");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("69")
@@ -69,7 +69,11 @@ module.exports = {
           name: `${desc}`,
           iconURL: `${interaction.user.avatarURL()}`,
         })
-        .setColor("Random")
+        .setColor(
+          colors.embedColors[
+            Math.floor(Math.random() * colors.embedColors.length)
+          ]
+        )
         .setImage(gif)
         .setDescription(`-# That's ${localCount} 69s now!!`);
       await interaction.editReply({ content: `${target}`, embeds: [embed] });

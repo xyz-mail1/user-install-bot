@@ -7,7 +7,7 @@ const {
 } = require("discord.js");
 const fetch = require("node-fetch");
 const database = require("../../models/test");
-
+const colors = require("../../colors.json");
 // API URLs for easier management
 const API_URLS = {
   fuck: "https://purrbot.site/api/img/nsfw/fuck/gif",
@@ -120,7 +120,11 @@ module.exports = {
         );
 
         const updatedEmbed = new EmbedBuilder()
-          .setColor("Random")
+          .setColor(
+            colors.embedColors[
+              Math.floor(Math.random() * colors.embedColors.length)
+            ]
+          )
           .setImage(newImage)
           .setDescription(
             `${target} ${subcommand}s ${interaction.user} back\n-# That's ${newCount} ${subcommand}s now`

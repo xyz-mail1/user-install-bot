@@ -6,7 +6,7 @@ const {
   ButtonStyle,
 } = require("discord.js");
 const fetch = require("node-fetch");
-
+const colors = require("../../colors.json");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("nsfw")
@@ -41,7 +41,11 @@ module.exports = {
       const data = await res.json();
       const embed = new EmbedBuilder()
         .setImage(data.message)
-        .setColor("Random");
+        .setColor(
+          colors.embedColors[
+            Math.floor(Math.random() * colors.embedColors.length)
+          ]
+        );
       await interaction.editReply({ embeds: [embed], components: [button] });
     } catch (error) {
       console.error("Error:", error);

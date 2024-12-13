@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const fetchGif = require("./fetchImage");
 const db = require("../../models/test");
-
+const colors = require("../../colors.json");
 /**
  * Creates a Discord slash command to interact with users and track interaction counts.
  * @param {string} name - The name of the command.
@@ -57,7 +57,11 @@ function createCommand(
       );
 
       const embed = new EmbedBuilder()
-        .setColor("Random")
+        .setColor(
+          colors.embedColors[
+            Math.floor(Math.random() * colors.embedColors.length)
+          ]
+        )
         .setImage(gifLink)
         .setDescription(
           `**${
